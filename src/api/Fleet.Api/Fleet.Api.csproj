@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\files\Fleet.Files\Fleet.Files.csproj" />
     <ProjectReference Include="..\..\vehicles\Fleet.Vehicles\Fleet.Vehicles.csproj" />
   </ItemGroup>
 

@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
 using System.Text.Json.Serialization;
+using tusdotnet;
+using tusdotnet.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -10,10 +12,11 @@ services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
     {
-        builder.AllowAnyMethod(); ;
-        builder.WithOrigins("http://localhost:4200", "https://localhost:4200");
+        builder.AllowAnyMethod();
         builder.AllowAnyHeader();
         builder.AllowCredentials();
+        builder.WithExposedHeaders(exposedHeaders: CorsHelper.GetExposedHeaders());
+        builder.WithOrigins("http://localhost:4200", "https://localhost:4200");
     });
 });
 services.AddControllers().AddJsonOptions(options =>
@@ -23,6 +26,7 @@ services.AddControllers().AddJsonOptions(options =>
 });
 
 services.AddVehicleService(configuration.GetSection("VehicleService"), Assembly.GetExecutingAssembly());
+services.AddFileService();
 
 // Add Swagger UI
 services.AddApiDocumentation();
@@ -37,6 +41,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 app.UseCors();
+
+app.UseTus(app.Configuration, null);
+
 app.UseRouting();
 app.UseAuthorization();
 app.MapControllers();
