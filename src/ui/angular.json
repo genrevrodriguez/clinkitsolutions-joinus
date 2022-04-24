@@ -32,7 +32,9 @@
                         "assets": ["src/favicon.ico", "src/assets"],
                         "styles": [
                             "src/styles.scss",
-                            "node_modules/leaflet/dist/leaflet.css"
+                            "node_modules/leaflet/dist/leaflet.css",
+                            "node_modules/@uppy/core/dist/style.css",
+                            "node_modules/@uppy/dashboard/dist/style.css"
                         ],
                         "scripts": []
                     },
@@ -98,7 +100,9 @@
                         "assets": ["src/favicon.ico", "src/assets"],
                         "styles": [
                             "src/styles.scss",
-                            "node_modules/leaflet/dist/leaflet.css"
+                            "node_modules/leaflet/dist/leaflet.css",
+                            "node_modules/@uppy/core/dist/style.css",
+                            "node_modules/@uppy/dashboard/dist/style.css"
                         ],
                         "scripts": []
                     }

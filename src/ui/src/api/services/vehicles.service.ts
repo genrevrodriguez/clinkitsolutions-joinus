@@ -10,6 +10,8 @@ import { Observable } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
 
 import { GetVehiclesResponse } from '../models/get-vehicles-response';
+import { UpdateVehicleLogsRequest } from '../models/update-vehicle-logs-request';
+import { UpdateVehicleLogsResponse } from '../models/update-vehicle-logs-response';
 
 @Injectable({
   providedIn: 'root',
@@ -28,7 +30,7 @@ export class VehiclesService extends BaseService {
   static readonly ApiVehiclesGetPath = '/api/vehicles';
 
   /**
-   * Gets a list of vehicles optionally filtered by fleet ID.
+   * Get a list of vehicles optionally filtered by fleet ID.
    *
    *
    *
@@ -58,7 +60,7 @@ export class VehiclesService extends BaseService {
   }
 
   /**
-   * Gets a list of vehicles optionally filtered by fleet ID.
+   * Get a list of vehicles optionally filtered by fleet ID.
    *
    *
    *
@@ -77,7 +79,7 @@ export class VehiclesService extends BaseService {
   }
 
   /**
-   * Gets a list of vehicles optionally filtered by fleet ID.
+   * Get a list of vehicles optionally filtered by fleet ID.
    *
    *
    *
@@ -107,7 +109,7 @@ export class VehiclesService extends BaseService {
   }
 
   /**
-   * Gets a list of vehicles optionally filtered by fleet ID.
+   * Get a list of vehicles optionally filtered by fleet ID.
    *
    *
    *
@@ -122,6 +124,109 @@ export class VehiclesService extends BaseService {
 
     return this.apiVehiclesGet$Json$Response(params).pipe(
       map((r: StrictHttpResponse<GetVehiclesResponse>) => r.body as GetVehiclesResponse)
+    );
+  }
+
+  /**
+   * Path part for operation apiVehiclesLogsPost
+   */
+  static readonly ApiVehiclesLogsPostPath = '/api/vehicles/logs';
+
+  /**
+   * Update vehicle location logs.
+   *
+   *
+   *
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `apiVehiclesLogsPost$Plain()` instead.
+   *
+   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   */
+  apiVehiclesLogsPost$Plain$Response(params?: {
+    body?: UpdateVehicleLogsRequest
+  }): Observable<StrictHttpResponse<UpdateVehicleLogsResponse>> {
+
+    const rb = new RequestBuilder(this.rootUrl, VehiclesService.ApiVehiclesLogsPostPath, 'post');
+    if (params) {
+      rb.body(params.body, 'application/*+json');
+    }
+
+    return this.http.request(rb.build({
+      responseType: 'text',
+      accept: 'text/plain'
+    })).pipe(
+      filter((r: any) => r instanceof HttpResponse),
+      map((r: HttpResponse<any>) => {
+        return r as StrictHttpResponse<UpdateVehicleLogsResponse>;
+      })
+    );
+  }
+
+  /**
+   * Update vehicle location logs.
+   *
+   *
+   *
+   * This method provides access to only to the response body.
+   * To access the full response (for headers, for example), `apiVehiclesLogsPost$Plain$Response()` instead.
+   *
+   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   */
+  apiVehiclesLogsPost$Plain(params?: {
+    body?: UpdateVehicleLogsRequest
+  }): Observable<UpdateVehicleLogsResponse> {
+
+    return this.apiVehiclesLogsPost$Plain$Response(params).pipe(
+      map((r: StrictHttpResponse<UpdateVehicleLogsResponse>) => r.body as UpdateVehicleLogsResponse)
+    );
+  }
+
+  /**
+   * Update vehicle location logs.
+   *
+   *
+   *
+   * This method provides access to the full `HttpResponse`, allowing access to response headers.
+   * To access only the response body, use `apiVehiclesLogsPost$Json()` instead.
+   *
+   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   */
+  apiVehiclesLogsPost$Json$Response(params?: {
+    body?: UpdateVehicleLogsRequest
+  }): Observable<StrictHttpResponse<UpdateVehicleLogsResponse>> {
+
+    const rb = new RequestBuilder(this.rootUrl, VehiclesService.ApiVehiclesLogsPostPath, 'post');
+    if (params) {
+      rb.body(params.body, 'application/*+json');
+    }
+
+    return this.http.request(rb.build({
+      responseType: 'json',
+      accept: 'text/json'
+    })).pipe(
+      filter((r: any) => r instanceof HttpResponse),
+      map((r: HttpResponse<any>) => {
+        return r as StrictHttpResponse<UpdateVehicleLogsResponse>;
+      })
+    );
+  }
+
+  /**
+   * Update vehicle location logs.
+   *
+   *
+   *
+   * This method provides access to only to the response body.
+   * To access the full response (for headers, for example), `apiVehiclesLogsPost$Json$Response()` instead.
+   *
+   * This method sends `application/*+json` and handles request body of type `application/*+json`.
+   */
+  apiVehiclesLogsPost$Json(params?: {
+    body?: UpdateVehicleLogsRequest
+  }): Observable<UpdateVehicleLogsResponse> {
+
+    return this.apiVehiclesLogsPost$Json$Response(params).pipe(
+      map((r: StrictHttpResponse<UpdateVehicleLogsResponse>) => r.body as UpdateVehicleLogsResponse)
     );
   }
 

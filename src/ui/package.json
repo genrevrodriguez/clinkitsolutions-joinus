@@ -20,6 +20,8 @@
     "@angular/platform-browser-dynamic": "~13.0.0",
     "@angular/router": "~13.0.0",
     "@asymmetrik/ngx-leaflet": "^8.1.0",
+    "@uppy/angular": "^0.3.0",
+    "@uppy/tus": "^2.2.2",
     "leaflet": "^1.7.1",
     "rxjs": "~7.4.0",
     "tslib": "^2.3.0",

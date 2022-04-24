@@ -1,7 +1,13 @@
+export { DeleteFileResponse } from './models/delete-file-response';
+export { FileViewModel } from './models/file-view-model';
 export { FleetViewModel } from './models/fleet-view-model';
+export { GetFilesResponse } from './models/get-files-response';
 export { GetFleetsRequest } from './models/get-fleets-request';
 export { GetFleetsResponse } from './models/get-fleets-response';
 export { GetVehiclesResponse } from './models/get-vehicles-response';
 export { Location } from './models/location';
+export { UpdateVehicleLogsRequest } from './models/update-vehicle-logs-request';
+export { UpdateVehicleLogsResponse } from './models/update-vehicle-logs-response';
 export { VehicleType } from './models/vehicle-type';
+export { VehicleUpdateViewModel } from './models/vehicle-update-view-model';
 export { VehicleViewModel } from './models/vehicle-view-model';

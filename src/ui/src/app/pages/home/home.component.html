@@ -14,6 +14,8 @@
     </ul>
 
     <spinner class="overlay" *ngIf="fleetsLoading"></spinner>
+
+    <uppy-dashboard [uppy]='uppy' [props]='uppyDashboardOptions'></uppy-dashboard>
 </div>
 
 <spinner class="overlay" *ngIf="vehiclesLoading"></spinner>

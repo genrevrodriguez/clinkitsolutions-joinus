@@ -4,6 +4,7 @@ import { NgModule, ModuleWithProviders, SkipSelf, Optional } from '@angular/core
 import { HttpClient } from '@angular/common/http';
 import { ApiConfiguration, ApiConfigurationParams } from './api-configuration';
 
+import { FilesService } from './services/files.service';
 import { FleetsService } from './services/fleets.service';
 import { VehiclesService } from './services/vehicles.service';
 
@@ -15,6 +16,7 @@ import { VehiclesService } from './services/vehicles.service';
   exports: [],
   declarations: [],
   providers: [
+    FilesService,
     FleetsService,
     VehiclesService,
     ApiConfiguration

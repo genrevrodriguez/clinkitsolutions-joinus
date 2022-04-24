@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HomeComponent } from './pages/home/home.component';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { FormsModule } from '@angular/forms';
+import { UppyAngularDashboardModule } from '@uppy/angular';
 import { AppRoutingModule } from './app-routing.module';
 import { SpinnerComponent } from './shared/spinner/spinner.component';
 
@@ -17,7 +18,9 @@ const components = [
         CommonModule,
         FormsModule,
 
-        LeafletModule
+        LeafletModule,
+
+        UppyAngularDashboardModule
     ],
     declarations: components,
     exports: components
