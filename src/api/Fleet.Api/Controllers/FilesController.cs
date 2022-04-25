@@ -1,9 +1,6 @@
 ﻿using Fleet.Files.Requests;
 using Fleet.Files.Responses;
 using Fleet.Files.Services;
-using Fleet.Vehicles.Requests;
-using Fleet.Vehicles.Responses;
-using Fleet.Vehicles.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fleet.Api.Controllers
@@ -27,6 +24,18 @@ namespace Fleet.Api.Controllers
         [HttpGet]
         [Route("")]
         public Task<GetFilesResponse> GetFilesAsync([FromQuery] GetFilesRequest request) => _fileService.GetFilesAsync(request);
+
+        [HttpGet]
+        [Route("download")]
+        public async Task<FileStreamResult> DownloadFileAsync([FromQuery] DownloadFileRequest request)
+        {
+            var response = await _fileService.DownloadFileAsync(request);
+
+            return File(
+                fileStream: response.FileStream, 
+                contentType: "application/octet-stream", 
+                fileDownloadName: response.FileName);
+        } 
 
         [HttpDelete]
         [Route("")]

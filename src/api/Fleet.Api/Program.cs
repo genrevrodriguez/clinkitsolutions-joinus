@@ -25,7 +25,7 @@ services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
-services.AddVehicleService(configuration.GetSection("VehicleService"), Assembly.GetExecutingAssembly());
+services.AddAssetService(configuration.GetSection("VehicleService"), Assembly.GetExecutingAssembly());
 services.AddFileService();
 
 // Add Swagger UI
@@ -42,7 +42,7 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles();
 app.UseCors();
 
-app.UseTus(app.Configuration, null);
+app.UseTus(app.Configuration);
 
 app.UseRouting();
 app.UseAuthorization();

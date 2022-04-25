@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HomeComponent } from './pages/home/home.component';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { FormsModule } from '@angular/forms';
-import { UppyAngularDashboardModule } from '@uppy/angular';
+import { UppyAngularDashboardModalModule } from '@uppy/angular';
 import { AppRoutingModule } from './app-routing.module';
 import { SpinnerComponent } from './shared/spinner/spinner.component';
 
@@ -20,7 +20,7 @@ const components = [
 
         LeafletModule,
 
-        UppyAngularDashboardModule
+        UppyAngularDashboardModalModule
     ],
     declarations: components,
     exports: components

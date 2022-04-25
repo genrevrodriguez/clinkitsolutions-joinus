@@ -4,8 +4,8 @@ import { ActivatedRoute } from '@angular/router';
 import { LeafletControlLayersConfig, LeafletDirective } from '@asymmetrik/ngx-leaflet';
 import * as L from 'leaflet';
 import { catchError, delay, interval, of, switchMap, tap, timer } from 'rxjs';
-import { GetFleetsRequest } from 'src/api/models';
-import { FleetsService, VehiclesService, FilesService } from 'src/api/services';
+import { GetFleetsRequest, GetAssetCategoriesRequest } from 'src/api/models';
+import { AssetsService, AssetCategoriesService, FleetsService, FilesService } from 'src/api/services';
 
 import { Uppy } from '@uppy/core';
 import { DashboardOptions } from '@uppy/dashboard';
@@ -21,7 +21,8 @@ export class HomeComponent implements OnInit {
     @ViewChild('searchFilterField') searchInput!: ElementRef<HTMLInputElement>;
     @ViewChild(LeafletDirective, { static: true }) leafletDirective!: LeafletDirective;
 
-    constructor(private vehiclesService: VehiclesService,
+    constructor(private assetsService: AssetsService,
+        private assetCategoriesService: AssetCategoriesService,
         private fleetsService: FleetsService,
         private filesService: FilesService,
         private activatedRoute: ActivatedRoute) { }
@@ -29,7 +30,7 @@ export class HomeComponent implements OnInit {
     pipe = new DatePipe('en-US');
 
     tusEndpoint: string = 'https://localhost:5001/uploads/';
-    filesEndpoint: string = this.filesService.rootUrl + '/api/files/';
+    filesEndpoint: string = this.filesService.rootUrl + '/api/files/download/';
 
     uppy: Uppy = new Uppy({
         debug: true,
@@ -49,10 +50,6 @@ export class HomeComponent implements OnInit {
 
             return files;
         }
-    }).use(Tus, {
-        endpoint: this.tusEndpoint,
-        chunkSize: 30000000, // (~28.6 MB) which is default max request body size for IIS and kestrel
-        removeFingerprintOnSuccess: true
     });
 
     uppyDashboardOptions: DashboardOptions = {
@@ -62,8 +59,14 @@ export class HomeComponent implements OnInit {
         doneButtonHandler: undefined,
         fileManagerSelectionType: 'files',
         note: 'Only csv files are allowed',
-        showLinkToFileUploadResult: true
+        showLinkToFileUploadResult: true,
+        disablePageScrollWhenModalOpen: true,
+        closeModalOnClickOutside: true,
+        closeAfterFinish: true,
+        animateOpenClose: true
     };
+
+    uppyDashboardModalOpen: boolean = false;
 
     options: L.MapOptions = {
         layers: [
@@ -89,11 +92,17 @@ export class HomeComponent implements OnInit {
     }
 
     fleets: any = [];
-    activeFleet: number | undefined = undefined;
+    assetCategories: any = [];
+    files: any = [];
     layers: L.Layer[] = [];
     searchFilter!: string;
 
-    vehiclesLoading: boolean = false;
+    activeFleet: number | undefined = undefined;
+    activeAssetCategory: number | undefined = undefined;
+    activeFile: string | undefined = undefined;
+
+    assetsLoading: boolean = false;
+    assetCategoriesLoading: boolean = false;
     fleetsLoading: boolean = false;
     filesLoading: boolean = false;
 
@@ -103,7 +112,19 @@ export class HomeComponent implements OnInit {
             if (fleetId == undefined) this.activeFleet = undefined;
             else this.activeFleet = parseInt(fleetId);
 
-            this.loadVehicles();
+            let assetCategoryId = params['assetCategory'];
+            if (assetCategoryId == undefined) this.activeAssetCategory = undefined;
+            else this.activeAssetCategory = parseInt(assetCategoryId);
+
+            this.activeFile = params['file'];
+
+            this.loadAssets();
+        });
+
+        this.uppy.use(Tus, {
+            endpoint: this.tusEndpoint,
+            chunkSize: 30000000, // (~28.6 MB) which is default max request body size for IIS and kestrel
+            removeFingerprintOnSuccess: true
         });
 
         this.uppy.on('complete', (result) => {
@@ -115,47 +136,29 @@ export class HomeComponent implements OnInit {
                     });
                 }
             }
+
+            this.loadFilters();
         });
 
-        this.filesLoading = true;
-        this.filesService.apiFilesGet$Json()
+        this.loadFilters();
+    }
+
+    loadFilters() {
+        let getAssetsCategoriesRequery: GetAssetCategoriesRequest = {};
+        this.assetCategoriesLoading = true;
+        this.assetCategoriesService.apiAssetcategoriesGet$Json({ request: getAssetsCategoriesRequery })
             .pipe(delay(1000))
             .subscribe({
                 next: (response) => {
-                    if (response.files == null) return;
+                    if (response.assetCategories == null) return;
 
-                    for (const key in response.files) {
-                        const file = response.files[key];
-                        const fileName = (file.metadatas ? file.metadatas['filename'] : file.id) || "";
-                        const fileType = file.metadatas ? file.metadatas['filetype'] : "";
-                        const fileSize = file.metadatas ? Number(file.metadatas['size']) : 0;
-                        const fileObject = new File([""], fileName);
-                        Object.defineProperty(fileObject, 'size', { value: fileSize });
-
-                        this.uppy.addFile({
-                            name: fileName,
-                            type: fileType,
-                            data: fileObject,
-                            source: 'Local',
-                            isRemote: false,
-                            meta: {
-                                uploadURL: "https://localhost:5001/api/files?FileId=" + file.id
-                            }
-                        });
-                    }
-
-                    this.uppy.getFiles().forEach(file => {
-                        this.uppy.setFileState(file.id, {
-                            progress: { uploadComplete: true, uploadStarted: true },
-                            uploadURL: file.meta ? file.meta['uploadURL'] : null
-                        });
-                    });
+                    this.assetCategories = response.assetCategories;
                 },
                 error: (response) => {
-                    this.filesLoading = false;
+                    this.assetCategoriesLoading = false;
                 },
                 complete: () => {
-                    this.filesLoading = false;
+                    this.assetCategoriesLoading = false;
                 }
             });
 
@@ -176,31 +179,48 @@ export class HomeComponent implements OnInit {
                     this.fleetsLoading = false;
                 }
             });
+
+        this.filesLoading = true;
+        this.filesService.apiFilesGet$Json()
+            .pipe(delay(1000))
+            .subscribe({
+                next: (response) => {
+                    if (response.files == null) return;
+
+                    this.files = response.files;
+                },
+                error: (response) => {
+                    this.filesLoading = false;
+                },
+                complete: () => {
+                    this.filesLoading = false;
+                }
+            });
     }
 
-    loadVehicles() {
-        this.vehiclesLoading = true;
+    loadAssets() {
+        this.assetsLoading = true;
         timer(0, 3000)
             .pipe(
                 delay(1000),
-                switchMap(() => this.vehiclesService.apiVehiclesGet$Json({ FleetId: this.activeFleet })),
+                switchMap(() => this.assetsService.apiAssetsGet$Json({ FleetId: this.activeFleet, AssetCategoryId: this.activeAssetCategory, FileId: this.activeFile })),
                 tap(response => {
                     this.layers = this.layers.filter(l => false);
-                    this.vehiclesLoading = false;
-                    if (response.vehicles == null) return;
+                    this.assetsLoading = false;
+                    if (response.assets == null) return;
 
-                    let vehicles = response.vehicles.filter(v => v.lastKnownLocation != null);
-                    let markers = vehicles.map(v => {
-                        let latLng = L.latLng(v.lastKnownLocation!!.latitude!!, v.lastKnownLocation!!.longitude!!);
+                    let assets = response.assets.filter(a => a.lastKnownLocation != null);
+                    let markers = assets.map(a => {
+                        let latLng = L.latLng(a.lastKnownLocation!!.latitude!!, a.lastKnownLocation!!.longitude!!);
                         let marker = L.marker(latLng, {
                             icon: L.icon({
-                                iconUrl: 'assets/truck.png',
+                                iconUrl: a.assetCategory?.iconPath || 'http://www.clker.com/cliparts/X/4/d/k/m/q/map-pin.svg.hi.png',
                                 iconSize: [48, 48],
                             }),
-                            title: v.name!!
+                            title: a.name!!
                         });
 
-                        marker.bindPopup(`<strong>${v.name}</strong>`);
+                        marker.bindPopup(`<strong><center>${a.name}</br>${a.assetCategory?.name}</center></strong>`, { closeButton: false, className: 'text-center' });
 
                         marker.on('mouseover', (e) => {
                             e.target.openPopup();
@@ -212,7 +232,7 @@ export class HomeComponent implements OnInit {
                     markers.forEach(m => this.layers.push(m));
                 }),
                 catchError(response => {
-                    this.vehiclesLoading = false;
+                    this.assetsLoading = false;
                     return of(response);
                 })
             ).subscribe();

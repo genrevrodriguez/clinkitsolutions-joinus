@@ -4,9 +4,10 @@ import { NgModule, ModuleWithProviders, SkipSelf, Optional } from '@angular/core
 import { HttpClient } from '@angular/common/http';
 import { ApiConfiguration, ApiConfigurationParams } from './api-configuration';
 
+import { AssetCategoriesService } from './services/asset-categories.service';
+import { AssetsService } from './services/assets.service';
 import { FilesService } from './services/files.service';
 import { FleetsService } from './services/fleets.service';
-import { VehiclesService } from './services/vehicles.service';
 
 /**
  * Module that provides all services and configuration.
@@ -16,9 +17,10 @@ import { VehiclesService } from './services/vehicles.service';
   exports: [],
   declarations: [],
   providers: [
+    AssetCategoriesService,
+    AssetsService,
     FilesService,
     FleetsService,
-    VehiclesService,
     ApiConfiguration
   ],
 })

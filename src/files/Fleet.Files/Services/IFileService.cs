@@ -7,6 +7,7 @@ namespace Fleet.Files.Services
     {
         IEnumerable<string> GetFileIds();
         Task<GetFilesResponse> GetFilesAsync(GetFilesRequest request, CancellationToken cancellationToken = default);
+        Task<DownloadFileResponse> DownloadFileAsync(DownloadFileRequest request, CancellationToken cancellationToken = default);
         Task<DeleteFileResponse> DeleteFileAsync(DeleteFileRequest request, CancellationToken cancellationToken = default);
     }
 }

@@ -52,6 +52,20 @@ namespace Fleet.Files.Services
             };
         }
 
+        public async Task<DownloadFileResponse> DownloadFileAsync(DownloadFileRequest request, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(request?.FileId)) return null;
+
+            var file = await this.tusDiskStore.GetFileAsync(request.FileId, cancellationToken);
+            if (file == null) return null;
+
+            return new DownloadFileResponse()
+            {
+                FileName = (await file.GetMetadataAsync(cancellationToken)).GetValueOrDefault("filename")?.GetString(Encoding.UTF8),
+                FileStream = await file.GetContentAsync(cancellationToken)
+            };
+        }
+
         public async Task<DeleteFileResponse> DeleteFileAsync(DeleteFileRequest request, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrWhiteSpace(request?.FileId)) return null;

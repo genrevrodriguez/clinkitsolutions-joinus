@@ -1,6 +1,6 @@
-﻿using Fleet.Vehicles.Requests;
-using Fleet.Vehicles.Responses;
-using Fleet.Vehicles.Services;
+﻿using Fleet.Assets.Requests;
+using Fleet.Assets.Responses;
+using Fleet.Assets.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fleet.Api.Controllers
